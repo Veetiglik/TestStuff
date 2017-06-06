@@ -1,0 +1,29 @@
+
+
+
+Tile class
+
+Tiles should 
+int xLoc;
+int yLoc;
+int zLoc;//should this be height? Makes sense that it would just be z so it can be held easily in a 3d array
+
+
+enum e_TileType
+{
+	GROUND,
+}
+
+enum e_tileContents
+{
+	EMPTY,
+	ALLY,
+	ENEMY,
+	NEUTRAL,//potentially unused
+	OBSTACLE
+}
+
+will need sprite array of colors for different terrain
+
+will need to be able to save this to a file
+

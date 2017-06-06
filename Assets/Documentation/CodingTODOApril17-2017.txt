@@ -1,0 +1,13 @@
+Make a map storage format 4/17 DONE
+Read map storage 4/17 DONE
+Write map storage 4/17 DONE
+Create debug tool to allow spawning of tiles 4/25 DONE
+
+Allow for map size to expand when creating tile outside of size of current map 5/03 DONE 
+when saving map, only save within the cube where there are actually tiles (so if the size is expanded then that tile is deleted, don't save the bloat) 5/03 DONE
+Should be able to add tiles to the negative side of currently existing map. Should still use positive bounds, but everything should be shifted over. 6/02
+
+Create pointer system for selecting tiles for adding and deleting 5/31
+
+Create character base 5/03
+Create script parse system for abilities 5/03

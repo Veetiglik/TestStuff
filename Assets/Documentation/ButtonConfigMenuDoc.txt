@@ -1,0 +1,73 @@
+This Module contains the code that contains the input handling and input configuration methods and state
+
+To begin with, the central class is GenericInput held in InputMananger.cs
+    public class GenericInput
+    {
+        //the name game action such as "accept"
+        Header.e_ButtonAction action;
+        //the function to call when the tied button or key is pressed 
+        Header.Func<int> actionPressed;
+        //the name of the action 
+        public string nameOfInputAxis;
+		public string nameOfInputAxis2;
+
+There is a file named "Header.cs" that contains some useful enums, constants and definitions such as
+public enum e_ButtonAction
+        {
+            UP,
+            RIGHT,
+            DOWN,
+            LEFT,
+            ACCEPT,
+            DECLINE,
+            MENUROTATER,
+            MENUROTATEL,
+            MENU,
+            MAXNUMINPUT
+        };
+which is the current whole list of actions that can be bound at once.
+
+public delegate void Func<T>(int playerID);
+This is the closest I can get to function pointers to allow each GenericInput object to hold their respective input call function
+
+nameOfInputAxis 1&2 are the actual strings that correspond to the Unity input values.
+
+*************
+
+Also within InputManager.cs is e_KeyButtonName
+This is an enum that lists every possible key or button that can be assigned to an input.
+This must be kept up to date with the related string array keyButtonNames in Header.cs. 
+
+*************
+
+Gameplay.cs is a monobehavior that must be attached to a GameObject. It runs the central loop which accepts input, then feeds it to the relevant location. 
+This is determined by "e_GameState gameState".
+
+Important functions include
+
+FillDefaultMenuValues(): This is only run if the file "InputConfig.txt" does not exist. If it does exist those values are pulled. 
+The file follows this format
+Up Up JS5
+Right Right JS6
+Down Down JS8
+Left Left JS7
+Accept Q JS0
+Decline W JS1
+Rotate/Menu Right R JS3
+Rotate/Menu Left E K
+Menu T JS4
+
+The first token is discarded and is just useful for display in the file. The second token of each line is the first input string tied to the initial action.
+The third token is the second input string tied to the action. If this file fails to follow this format, or the inputs don't match "keyButtonNames" in Header.cs
+then FillDefaultMenuValues will be used. 
+
+If "InputConfig.txt" fails FillDefaultMenuValues is run during init and fills the inputStorageArray. This associates each input key/button with an action. 
+These default inputs can be modified from the Gameplay script in the inspector.
+The location of "InputConfig.txt" can be modified in the Gameplay script inspector as InputConfigLocation.
+
+
+*************
+
+MenuConfig
+
+

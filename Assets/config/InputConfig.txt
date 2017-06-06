@@ -1,0 +1,9 @@
+up Up JS5
+right Right JS8
+down Down JS6
+left Left JS7
+accept A JS0
+decline S JS1
+RotateR D JS3
+RotateL F JS4
+Menu G JS2

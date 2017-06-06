@@ -1,0 +1,32 @@
+else if (!IsTileLocValid (x, y, z))
+		{
+			//need to create new array of a larger size and transfer contents over
+
+			//determine new bounds
+			int newX = ((x + 1) > map.xSize) ? (x + 1) : map.xSize;
+			int newY = ((y + 1) > map.ySize) ? (y + 1) : map.ySize;
+			int newZ = ((z + 1) > map.zSize) ? (z + 1): map.zSize;
+
+			Map newMap = new Map (newX, newY, newZ);
+
+			//copy old map array over
+			for (int i = 0; i < map.xSize; i++)
+			{
+				for (int j = 0; j < map.ySize; j++)
+				{
+					for (int k = 0; k < map.zSize; k++)
+					{
+						newMap.mapArray [i,j,k] = map.mapArray [i,j,k];
+					}
+				}
+			}
+			//update view editor components as well
+			viewReferenceComponent.UpdateMapArray(map.xSize, map.ySize, map.zSize, newX, newY, newZ);
+
+			map = newMap;
+		}
+
+		//add new tile
+		map.mapArray [x, y, z] = new Tile (x, y, z, type, e_tileContents.EMPTY);
+		viewReferenceComponent.RenderTile (map.mapArray [x, y, z]);
+	}
