@@ -23,12 +23,6 @@ public class MapEditorView : MonoBehaviour
 		mapContainer.name = "Map";
 	}
 
-	// Update is called once per frame
-	void Update () 
-	{
-
-	}
-
 	public void CreateMap(int x, int y, int z)
 	{
 		mapSize = new MapSize (x, y, z);
@@ -58,7 +52,8 @@ public class MapEditorView : MonoBehaviour
 		//for()
 	}
 
-	public void RenderTile(Tile tile)
+    //instead of being able to use the tile aLocs, we need to pass them in in case of tiles added to negative axis sides
+	public void RenderTile(Tile tile, int xLoc, int yLoc, int zLoc)
 	{
 		if (mapTileArray [tile.xLoc, tile.yLoc, tile.zLoc] != null)
 		{
@@ -71,7 +66,7 @@ public class MapEditorView : MonoBehaviour
 		tileObj.transform.parent = mapContainer.transform.GetChild (tile.xLoc).transform.GetChild(tile.yLoc);
 
 		//now actually have to set location
-		tileObj.transform.position = new Vector3((float)tile.xLoc, (float)tile.yLoc*.25f, (float)tile.zLoc);
+		tileObj.transform.position = new Vector3((float)xLoc, (float)yLoc*.25f, (float)zLoc);
 
 		mapTileArray [tile.xLoc, tile.yLoc, tile.zLoc] = tileObj;
 	}
@@ -102,7 +97,7 @@ public class MapEditorView : MonoBehaviour
 			{
 				for (int k = 0; k < oldBoundZ; k++)
 				{
-					newMapTileArray [!leftOfBoundsX ? i:i-x, !leftOfBoundsY ? j:j-y, !leftOfBoundsZ ? k:k-z] = newMapTileArray [i,j,k];
+					newMapTileArray [!leftOfBoundsX ? i:i-x, !leftOfBoundsY ? j:j-y, !leftOfBoundsZ ? k:k-z] = mapTileArray [i,j,k];
 				}
 			}
 		}
@@ -114,63 +109,111 @@ public class MapEditorView : MonoBehaviour
 		GameObject row;
 		GameObject col;
 
-		if (!leftOfBoundsX && !leftOfBoundsY && !leftOfBoundsZ)
+        if (leftOfBoundsX)
+        {
+            //shift the existing rows
+            //in descending order to not double up any names at any time
+            for (int i = oldBoundX - 1; i >= 0; i--)
+            {
+                //only need to update the name because the child/sibling index will be updated automatically as the new rows are added
+                mapContainer.transform.GetChild(i).name = "row" + (i - x).ToString();
+            }
+
+            //add the new rows to the left
+            //in descending order to make sure SetAsFirstSibling works correctly
+            for (int i = -x - 1; i >= 0; i--)
+            {
+                row = new GameObject();
+                row.name = "row" + i.ToString();
+                row.transform.parent = mapContainer.transform;
+                row.transform.SetAsFirstSibling();
+
+                for (int j = 0; j < newBoundY; j++)
+                {
+                    col = new GameObject();
+                    col.name = "col" + j.ToString();
+                    col.transform.parent = row.transform;
+                }
+            }
+        }
+        else
+        {
+            for (int i = oldBoundX; i < newBoundX; i++)
+            {
+                row = new GameObject();
+                row.name = "row" + i.ToString();
+                row.transform.parent = mapContainer.transform;
+
+                for (int j = 0; j < oldBoundY; j++)
+                {
+                    col = new GameObject();
+                    col.name = "col" + j.ToString();
+                    col.transform.parent = row.transform;
+                }
+            }
+        }
+
+		if (leftOfBoundsY)
 		{
-			//in a new loop, add the gameobject containers for the new tiles
-			for (int i = oldBoundX; i < newBoundX; i++)
-			{
-				row = new GameObject ();
-				row.name = "row" + i.ToString ();
-				row.transform.parent = mapContainer.transform;
+            //shift the existing cols
+            //in descending order to not double up any names at any time
+            for (int i = 0; i < newBoundX; i++)
+            {
+                for (int j = oldBoundY - 1; j >= 0; j--)
+                {
+                    //only need to update the name because the child/sibling index will be updated automatically as the new rows are added
+                    mapContainer.transform.GetChild(i).GetChild(j).name = "col" + (j - y).ToString();
+                }
+            }
 
-				for (int j = 0; j < oldBoundY; j++)
-				{
-					col = new GameObject ();
-					col.name = "col" + j.ToString ();
-					col.transform.parent = row.transform;
-				}
-			}
+            //add the new cols to the bottom
+            //don't need to shift tiles in 
+            for (int i = newBoundX - oldBoundX; i < newBoundX; i++)
+            {
+                //in descending order to make sure SetAsFirstSibling works correctly
+                for (int j = -y - 1; j >= 0; j--)
+                {
+                    col = new GameObject();
+                    col.name = "col" + j.ToString();
+                    col.transform.parent = mapContainer.transform.GetChild(i);
+                    col.transform.SetAsFirstSibling();
+                }
+            }
+        }
+        else
+        {
+            for (int i = 0; i < newBoundX; i++)
+            {
+                for (int j = oldBoundY; j < newBoundY; j++)
+                {
+                    col = new GameObject();
+                    col.name = "col" + j.ToString();
+                    col.transform.parent = mapContainer.transform.GetChild(i);
+                }
+            }
+        }
 
+		if (leftOfBoundsZ)
+		{
+			//loop through every row,col and shift every z tile up that many numbers
+
+			//this updates the name at the z level 
 			for (int i = 0; i < newBoundX; i++)
 			{
-				for (int j = oldBoundY; j < newBoundY; j++)
+				for (int j = 0; j < newBoundY; j++)
 				{
-					col = new GameObject ();
-					col.name = "col" + j.ToString ();
-					col.transform.parent = mapContainer.transform.GetChild (i);
+                    //in descending order to not double up any names at any time
+                    for (int k = newBoundZ - 1; k >= newBoundZ - oldBoundZ; k--)
+                    {
+                        if (mapTileArray[i, j, k] != null)
+                        {
+                            mapTileArray[i, j, k].name = (k).ToString();
+                        }
+                    }
 				}
 			}
 		}
-		else
-		{
-			//will probably need to shift this around because all of the above stuff is still necessary. Just doing this separate to 
-			//make it simpler to think about
-
-			if (leftOfBoundsX)
-			{
-			}
-
-			if (leftOfBoundsY)
-			{
-			}
-
-			if (leftOfBoundsZ)
-			{
-				//loop through every row,col and shift every z tile up that many numbers
-
-				//this updates the name at the z level 
-				for (int i = 0; i < newBoundX; i++)
-				{
-					for (int j = 0; j < newBoundY; j++)
-					{
-						for (int k = 0; k < newBoundZ; k++)
-						{
-							mapTileArray [i, j, k].name = k.ToString ();
-						}
-					}
-				}
-			}
-		}
+		//}
 		//z tile will be added as normal in tile render
 
 		mapSize.mapSizeEdit(newBoundX, newBoundY, newBoundZ);

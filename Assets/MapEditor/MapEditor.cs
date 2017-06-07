@@ -266,6 +266,10 @@ public class MapEditor : MonoBehaviour {
 
 	void CreateTile(int x, int y, int z, e_TileType type)
 	{
+		bool leftOfBoundsX = false;
+		bool leftOfBoundsY = false;
+		bool leftOfBoundsZ = false;
+
 		if (!IsTileLocValid (x, y, z))
 		{
 			//need to create new array of a larger size and transfer contents over
@@ -274,9 +278,6 @@ public class MapEditor : MonoBehaviour {
 			int newX;
 			int newY;
 			int newZ;
-			bool leftOfBoundsX = false;
-			bool leftOfBoundsY = false;
-			bool leftOfBoundsZ = false;
 
 			//expand map outwards
 			if(x + 1 > map.xSize)
@@ -351,11 +352,18 @@ public class MapEditor : MonoBehaviour {
 				leftOfBoundsX, leftOfBoundsY, leftOfBoundsZ, x, y, z);
 
 			map = newMap;
-		}
 
-		//add new tile
-		map.mapArray [x, y, z] = new Tile (x, y, z, type, e_tileContents.EMPTY);
-		viewReferenceComponent.RenderTile (map.mapArray [x, y, z]);
+        }
+
+        //add new tile
+        //the ternary operators make sure that if a new tile is added to the left it gets put at the start of the array
+
+        int finalX = !leftOfBoundsX ? x : 0;
+        int finalY = !leftOfBoundsY ? y : 0;
+        int finalZ = !leftOfBoundsZ ? z : 0;
+
+        map.mapArray [finalX, finalY, finalZ] = new Tile (finalX, finalY, finalZ, type, e_tileContents.EMPTY);
+		viewReferenceComponent.RenderTile (map.mapArray [finalX, finalY, finalZ], x, y, z);
 	}
 
 	void DestroyTile(int x, int y, int z)
