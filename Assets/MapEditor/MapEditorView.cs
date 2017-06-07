@@ -219,3 +219,4 @@ public class MapEditorView : MonoBehaviour
 		mapSize.mapSizeEdit(newBoundX, newBoundY, newBoundZ);
 	}
 }
+
