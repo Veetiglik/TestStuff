@@ -157,7 +157,7 @@ public class MapEditorView : MonoBehaviour
 		{
             //shift the existing cols
             //in descending order to not double up any names at any time
-            for (int i = 0; i < newBoundX; i++)
+            for (int i = newBoundX - oldBoundX; i < newBoundX; i++)
             {
                 for (int j = oldBoundY - 1; j >= 0; j--)
                 {
