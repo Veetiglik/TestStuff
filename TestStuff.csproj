@@ -83,6 +83,7 @@
     <Compile Include="Assets\MapEditor\MapHeader.cs" />
     <Compile Include="Assets\SetMenu\ConfigMenu.cs" />
     <Compile Include="Assets\SetMenu\ConfigMenuView.cs" />
+    <Compile Include="Assets\camera control\CameraControl.cs" />
     <Compile Include="Assets\gameplay\Gameplay.cs" />
     <Compile Include="Assets\headers\Header.cs" />
     <Compile Include="Assets\inputManager\InputManager.cs" />
